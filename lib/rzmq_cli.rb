@@ -1,5 +1,5 @@
 require "rzmq_cli/version"
+require "rzmq_cli/runner"
 
 module RzmqCli
-  # Your code goes here...
 end
