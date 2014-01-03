@@ -16,11 +16,11 @@ module RzmqCli
     attr_accessor :mode, :socket_type, :socket_options, :socket, :addresses
 
     def initialize(args, output = nil)
-      @mode           = args["-b"] ? :bind : :connect #relies on mutual exclusive options
-      @addresses      = args["<address>"]
+      @mode           = args["mode"]
+      @addresses      = args["addreses"]
 
-      @socket_type    = VALID_ZMQ_SOCKET_TYPES[args["SOCKET_TYPE"]]
-      @socket_options = args["-o"]
+      @socket_type    = VALID_ZMQ_SOCKET_TYPES[args["socket_type"]]
+      @socket_options = args["socket_options"]
 
       @zmq_context    = ZMQ::Context.new
     end

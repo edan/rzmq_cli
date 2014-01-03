@@ -9,10 +9,17 @@ Usage:
 DOCOPT
 
 begin
-  args = Docopt::docopt(doc)
+  options = Docopt::docopt(doc)
+
+  args = {
+    "mode"           => options["-b"] ? :bind : :connect,
+    "addresses"      => options["<address>"],
+    "socket_type"    => options["SOCKET_TYPE"],
+    "socket_options" => options["-o"]
+  }
+
+  RzmqCli::Runner.new(args).run
 rescue Docopt::Exit => e
   puts e.message
   exit(0)
 end
-
-RzmqCli::Runner.new(args).run
