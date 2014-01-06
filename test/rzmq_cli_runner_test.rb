@@ -45,7 +45,7 @@ class RzmqCliRunnerTest < Minitest::Test
     assert_nil rcr.socket_type #TODO should raise
   end
 
-  def test_set_up_socket
+  def test_set_up_socket_bind
     runner_args = {
       "mode"           => :bind,
       "addresses"      => ["tcp://0.0.0.0:7777"],
@@ -56,6 +56,25 @@ class RzmqCliRunnerTest < Minitest::Test
 
     mock_socket = Minitest::Mock.new
     mock_socket.expect(:bind, :return_value, ["tcp://0.0.0.0:7777"])
+
+    rcr.zmq_context.stub :socket, mock_socket do
+      rcr.set_up_socket!
+      mock_socket.verify
+    end
+
+  end
+
+  def test_set_up_socket_connect
+    runner_args = {
+      "mode"           => :connect,
+      "addresses"      => ["tcp://0.0.0.0:7777"],
+      "socket_type"    => "PULL",
+    }
+
+    rcr = RzmqCli::Runner.new(runner_args)
+
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect(:connect, :return_value, ["tcp://0.0.0.0:7777"])
 
     rcr.zmq_context.stub :socket, mock_socket do
       rcr.set_up_socket!
