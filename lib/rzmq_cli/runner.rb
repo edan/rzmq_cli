@@ -21,13 +21,15 @@ module RzmqCli
 
       @socket_type    = VALID_ZMQ_SOCKET_TYPES[args["socket_type"]]
       @socket_options = args["socket_options"]
+      @input          = args["input"]  || $stdin
+      @logger         = args["logger"] || $stderr
 
       @zmq_context    = ZMQ::Context.new
     end
 
     def set_up_socket!
       @socket = zmq_context.socket(socket_type)
-      puts "is #{mode}"
+      @logger.puts "is #{mode}"
       addresses.each{|a| @socket.__send__(@mode, a)}
     end
 
@@ -43,31 +45,31 @@ module RzmqCli
     end
 
     def push_loop(socket)
-      puts "PUSH socket starting"
+      @logger.puts "PUSH socket starting"
 
       write
     end
 
     def pull_loop(socket)
-      puts "PULL socket starting"
+      @logger.puts "PULL socket starting"
 
       read_loop
     end
 
     def read_loop
-      puts "reading from #{addresses}"
+      @logger.puts "reading from #{addresses}"
 
       msg = ''
       loop do
         socket.recv_string(msg)
-        puts msg
+        @logger.puts msg
       end
     end
 
     def write
-      puts "writing to #{addresses}"
+      @logger.puts "writing to #{addresses}"
 
-      socket.send_string($stdin.gets)
+      socket.send_string(@input.gets)
     end
   end
 end

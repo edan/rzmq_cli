@@ -7,14 +7,20 @@ require './lib/rzmq_cli/runner'
 
 class RzmqCliRunnerTest < Minitest::Test
 
-  def test_initialize_runner
-    runner_args = {
-      "mode"           => :bind,
+  def setup
+    @runner_args = {
       "addresses"      => ["tcp://0.0.0.0:7777"],
-      "socket_type"    => "PUSH",
+      "logger"         => StringIO.new
     }
+  end
 
-    rcr = RzmqCli::Runner.new(runner_args)
+  def test_initialize_runner
+    @runner_args.update(
+      "mode"           => :bind,
+      "socket_type"    => "PUSH"
+    )
+
+    rcr = RzmqCli::Runner.new(@runner_args)
 
     assert rcr.mode
     assert rcr.socket_type
@@ -46,13 +52,12 @@ class RzmqCliRunnerTest < Minitest::Test
   end
 
   def test_set_up_socket_bind
-    runner_args = {
+    @runner_args.update(
       "mode"           => :bind,
-      "addresses"      => ["tcp://0.0.0.0:7777"],
-      "socket_type"    => "PUSH",
-    }
+      "socket_type"    => "PUSH"
+    )
 
-    rcr = RzmqCli::Runner.new(runner_args)
+    rcr = RzmqCli::Runner.new(@runner_args)
 
     mock_socket = Minitest::Mock.new
     mock_socket.expect(:bind, :return_value, ["tcp://0.0.0.0:7777"])
@@ -65,19 +70,37 @@ class RzmqCliRunnerTest < Minitest::Test
   end
 
   def test_set_up_socket_connect
-    runner_args = {
+    @runner_args.update(
       "mode"           => :connect,
-      "addresses"      => ["tcp://0.0.0.0:7777"],
-      "socket_type"    => "PULL",
-    }
+      "socket_type"    => "PULL"
+    )
 
-    rcr = RzmqCli::Runner.new(runner_args)
+    rcr = RzmqCli::Runner.new(@runner_args)
 
     mock_socket = Minitest::Mock.new
     mock_socket.expect(:connect, :return_value, ["tcp://0.0.0.0:7777"])
 
     rcr.zmq_context.stub :socket, mock_socket do
       rcr.set_up_socket!
+      mock_socket.verify
+    end
+
+  end
+
+  def test_run_of_bind_push_socket
+    @runner_args.update(
+      "mode"           => :bind,
+      "socket_type"    => "PUSH",
+      "input"          => StringIO.new("test")
+    )
+
+    rcr = RzmqCli::Runner.new(@runner_args)
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect(:bind, :return_value, ["tcp://0.0.0.0:7777"])
+    mock_socket.expect(:send_string, :return_value, ["test"])
+
+    rcr.zmq_context.stub :socket, mock_socket do
+      rcr.run
       mock_socket.verify
     end
 
