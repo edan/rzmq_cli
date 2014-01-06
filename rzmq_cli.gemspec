@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "rzmq_cli"
   spec.version       = RzmqCli::VERSION
   spec.authors       = ["edan"]
-  spec.email         = ["edan.rosenberg@gmail.com"]
+  spec.email         = ["edan@edan.org"]
   spec.description   = "Command Line Interface for zeromq written in ruby"
   spec.summary       = "Command Line Interface for zeromq written in ruby"
   spec.homepage      = ""
@@ -20,6 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "minitest"
+  spec.add_development_dependency "simplecov"
   spec.add_dependency "ffi-rzmq"
   spec.add_dependency "docopt"
 end

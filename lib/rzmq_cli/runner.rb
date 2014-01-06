@@ -15,9 +15,9 @@ module RzmqCli
     attr_reader   :zmq_context
     attr_accessor :mode, :socket_type, :socket_options, :socket, :addresses
 
-    def initialize(args, output = nil)
+    def initialize(args)
       @mode           = args["mode"]
-      @addresses      = args["addreses"]
+      @addresses      = args["addresses"]
 
       @socket_type    = VALID_ZMQ_SOCKET_TYPES[args["socket_type"]]
       @socket_options = args["socket_options"]
