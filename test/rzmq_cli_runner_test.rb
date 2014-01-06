@@ -44,4 +44,23 @@ class RzmqCliRunnerTest < Minitest::Test
     rcr = RzmqCli::Runner.new("socket_type" => "something_not_in_list")
     assert_nil rcr.socket_type #TODO should raise
   end
+
+  def test_set_up_socket
+    runner_args = {
+      "mode"           => :bind,
+      "addresses"      => ["tcp://0.0.0.0:7777"],
+      "socket_type"    => "PUSH",
+    }
+
+    rcr = RzmqCli::Runner.new(runner_args)
+
+    mock_socket = Minitest::Mock.new
+    mock_socket.expect(:bind, :return_value, ["tcp://0.0.0.0:7777"])
+
+    rcr.zmq_context.stub :socket, mock_socket do
+      rcr.set_up_socket!
+      mock_socket.verify
+    end
+
+  end
 end
